@@ -35,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import markus.wieland.dvbfahrplan.R
 import markus.wieland.dvbfahrplan.core.designsystem.FahrplanTheme
-import markus.wieland.dvbfahrplan.core.designsystem.Hairline
 import markus.wieland.dvbfahrplan.core.designsystem.IconButton
 import markus.wieland.dvbfahrplan.core.designsystem.LineBadge
 import markus.wieland.dvbfahrplan.core.designsystem.Txt
@@ -291,7 +290,6 @@ private fun GapRow(text: String, dashed: Boolean) {
         )
         Txt(text, style = FahrplanTheme.type.caption, color = colors.inkMuted, modifier = Modifier.padding(horizontal = 8.dp, vertical = 14.dp))
     }
-    Hairline(start = TimeColumn + RailColumn)
 }
 
 private fun shareText(context: Context, route: Route, origin: Stop, destination: Stop): String {

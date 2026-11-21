@@ -122,7 +122,7 @@ fun DepartureRow(departure: Departure, now: Instant, onDisruptionClick: () -> Un
                             .clickable(role = Role.Button, onClick = onDisruptionClick)
                             .padding(horizontal = 6.dp, vertical = 2.dp),
                     ) {
-                        Icon(R.drawable.ic_warning, stringResource(R.string.section_disruptions), tint = colors.delayed, size = 16.dp)
+                        Icon(R.drawable.ic_warning, stringResource(R.string.section_disruptions), tint = colors.inkFaint, size = 16.dp)
                     }
                 }
             }
@@ -158,11 +158,8 @@ private fun Countdown(time: TimePoint, now: Instant) {
             return@Column
         }
         val minutes = time.best.minutesFrom(now)
-        val color = when {
-            time.realTime == null -> colors.ink
-            (time.delayMinutes ?: 0) > 1 -> colors.delayed
-            else -> colors.onTime
-        }
+        // Calm board: the countdown is always ink; punctuality shows only in the small "+3" next to the time.
+        val color = colors.ink
         if (minutes == 0L) {
             Txt(stringResource(R.string.now_short), style = type.timeLarge, color = color)
         } else if (minutes < 60) {

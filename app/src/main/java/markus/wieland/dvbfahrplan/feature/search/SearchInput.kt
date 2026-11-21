@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import markus.wieland.dvbfahrplan.R
 import markus.wieland.dvbfahrplan.core.designsystem.FahrplanTheme
 import markus.wieland.dvbfahrplan.core.designsystem.Hairline
@@ -161,14 +162,14 @@ private fun StopField(
     Row(
         Modifier
             .fillMaxWidth()
-            .height(54.dp),
+            .height(48.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BasicTextField(
             value = text,
             onValueChange = onTextChange,
             singleLine = true,
-            textStyle = type.bodyStrong.copy(color = colors.ink, fontSize = type.heading.fontSize),
+            textStyle = type.bodyStrong.copy(color = colors.ink, fontSize = 17.sp),
             cursorBrush = SolidColor(colors.accent),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
@@ -179,7 +180,7 @@ private fun StopField(
             decorationBox = { inner ->
                 Box(contentAlignment = Alignment.CenterStart) {
                     if (text.isEmpty()) {
-                        Txt(placeholder, style = type.body.copy(fontSize = type.heading.fontSize), color = colors.inkFaint, maxLines = 1)
+                        Txt(placeholder, style = type.body.copy(fontSize = 17.sp), color = colors.inkFaint, maxLines = 1)
                     }
                     inner()
                 }

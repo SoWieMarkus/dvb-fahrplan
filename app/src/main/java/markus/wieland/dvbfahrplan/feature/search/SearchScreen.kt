@@ -2,6 +2,12 @@ package markus.wieland.dvbfahrplan.feature.search
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -418,16 +424,49 @@ private fun SavedRouteRow(route: SavedRoute, onClick: () -> Unit) {
             .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(Modifier.weight(1f)) {
-            Txt(route.origin.name, style = FahrplanTheme.type.bodyStrong, maxLines = 1)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Txt("→ ", style = FahrplanTheme.type.bodyStrong, color = colors.inkFaint)
-                Txt(route.destination.name, style = FahrplanTheme.type.bodyStrong, maxLines = 1)
-            }
+        // Same rail as the input fields: ring = start, dotted line, square = destination.
+        Column(
+            Modifier
+                .weight(1f)
+                .drawBehind {
+                    val x = RailMark.toPx() / 2
+                    val gap = 4.dp.toPx()
+                    drawLine(
+                        color = colors.inkFaint,
+                        start = Offset(x, RailRowHeight.toPx() / 2 + RailMark.toPx() / 2 + gap),
+                        end = Offset(x, size.height - RailRowHeight.toPx() / 2 - RailMark.toPx() / 2 - gap),
+                        strokeWidth = 1.5.dp.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(3f, 5f)),
+                    )
+                },
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            RailStop(route.origin.name, isStart = true)
+            RailStop(route.destination.name, isStart = false)
         }
         Icon(R.drawable.ic_next, null, tint = colors.inkFaint, size = 20.dp)
     }
     Hairline()
+}
+
+private val RailMark = 9.dp
+private val RailRowHeight = 22.dp
+
+@Composable
+private fun RailStop(name: String, isStart: Boolean) {
+    val colors = FahrplanTheme.colors
+    Row(Modifier.height(RailRowHeight), verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier
+                .size(RailMark)
+                .then(
+                    if (isStart) Modifier.border(2.dp, colors.ink, CircleShape)
+                    else Modifier.background(colors.ink, RoundedCornerShape(2.dp)),
+                ),
+        )
+        Spacer(Modifier.width(14.dp))
+        Txt(name, style = FahrplanTheme.type.bodyStrong, maxLines = 1)
+    }
 }
 
 @Composable

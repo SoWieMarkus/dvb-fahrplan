@@ -9,11 +9,11 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.DeviceFontFamilyName
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import markus.wieland.dvbfahrplan.R
 
 /**
  * The app's own small design system. No Material: a warm paper background, ink-colored text,
@@ -68,9 +68,18 @@ private val Dark = FahrplanColors(
     isDark = true,
 )
 
+// Barlow (OFL, see assets/licenses/Barlow-OFL.txt): a grotesk modelled on road and transit signs.
+// The regular width carries body text, the condensed width station names, labels and times.
+private val Sans = FontFamily(
+    Font(R.font.barlow_regular, FontWeight.Normal),
+    Font(R.font.barlow_medium, FontWeight.Medium),
+    Font(R.font.barlow_semibold, FontWeight.SemiBold),
+)
+
 private val Condensed = FontFamily(
-    Font(DeviceFontFamilyName("sans-serif-condensed"), FontWeight.Normal),
-    Font(DeviceFontFamilyName("sans-serif-condensed"), FontWeight.Bold),
+    Font(R.font.barlow_condensed_regular, FontWeight.Normal),
+    Font(R.font.barlow_condensed_semibold, FontWeight.SemiBold),
+    Font(R.font.barlow_condensed_bold, FontWeight.Bold),
 )
 
 @Immutable
@@ -80,9 +89,9 @@ data class FahrplanType(
     val heading: TextStyle = TextStyle(fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 19.sp, lineHeight = 24.sp),
     /** Small caps-like section labels. */
     val label: TextStyle = TextStyle(fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 1.2.sp),
-    val body: TextStyle = TextStyle(fontSize = 16.sp, lineHeight = 22.sp),
-    val bodyStrong: TextStyle = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold),
-    val caption: TextStyle = TextStyle(fontSize = 13.sp, lineHeight = 18.sp),
+    val body: TextStyle = TextStyle(fontFamily = Sans, fontSize = 16.sp, lineHeight = 22.sp),
+    val bodyStrong: TextStyle = TextStyle(fontFamily = Sans, fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold),
+    val caption: TextStyle = TextStyle(fontFamily = Sans, fontSize = 13.sp, lineHeight = 18.sp),
     /** Departure countdowns and clock times, like on a station board. */
     // Condensed like the stop names, with tabular figures ("tnum") so times line up in columns.
     val timeLarge: TextStyle = TextStyle(fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 25.sp, lineHeight = 28.sp, fontFeatureSettings = "tnum"),
