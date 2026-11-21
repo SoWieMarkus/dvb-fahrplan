@@ -21,3 +21,8 @@ app/release/
 *.aab
 *.apk
 .kotlin
+
+# Signing secrets for release builds
+keystore.properties
+*.jks
+*.keystore
