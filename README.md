@@ -36,4 +36,9 @@ Disclaimer! The app is NOT related to the Dresdner Verkehrsbetriebe (DVB) or the
 
 ## Screenshots
 
-<img width="25%" src="https://github.com/SoWieMarkus/DVB-Fahrplan/blob/main/screenshots/englisch/Screenshot_20210425-161238_DVB%20Fahrplan.jpg"><img width="25%" src="https://github.com/SoWieMarkus/DVB-Fahrplan/blob/main/screenshots/englisch/Screenshot_20210425-161301_DVB%20Fahrplan.jpg">
+<img width="30%" src="screenshots/2.0/1-home.png"> <img width="30%" src="screenshots/2.0/2-departures.png"> <img width="30%" src="screenshots/2.0/3-connections.png">
+<img width="30%" src="screenshots/2.0/4-route-detail.png"> <img width="30%" src="screenshots/2.0/5-trip.png"> <img width="30%" src="screenshots/2.0/6-service-changes.png">
+
+## Releasing
+
+See [RELEASING.md](RELEASING.md).
