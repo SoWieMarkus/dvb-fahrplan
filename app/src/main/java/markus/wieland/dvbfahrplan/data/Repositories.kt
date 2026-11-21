@@ -17,6 +17,7 @@ import markus.wieland.dvbfahrplan.core.network.RouteRequest
 import markus.wieland.dvbfahrplan.core.network.TripRequest
 import markus.wieland.dvbfahrplan.core.network.VvoApi
 import markus.wieland.dvbfahrplan.core.network.VvoDate
+import markus.wieland.dvbfahrplan.core.network.VvoException
 import markus.wieland.dvbfahrplan.core.network.toDepartures
 import markus.wieland.dvbfahrplan.core.network.toDisruptions
 import markus.wieland.dvbfahrplan.core.network.toLines
@@ -39,7 +40,22 @@ class StopRepository @Inject constructor(
     private val dao: StopDao,
     private val clock: Clock,
 ) {
-    suspend fun search(query: String): List<Stop> = api.findStops(query).toStops()
+    /**
+     * Stops matching [query]. The API rejects queries shorter than [MIN_QUERY_LENGTH] with a ValidationError;
+     * that simply means "nothing found", not a failure.
+     */
+    suspend fun search(query: String): List<Stop> {
+        if (query.trim().length < MIN_QUERY_LENGTH) return emptyList()
+        return try {
+            api.findStops(query.trim()).toStops()
+        } catch (e: VvoException.Service) {
+            if (e.code.equals("ValidationError", ignoreCase = true)) emptyList() else throw e
+        }
+    }
+
+    companion object {
+        const val MIN_QUERY_LENGTH = 3
+    }
 
     val favorites: Flow<List<Stop>> = dao.favorites().map { list -> list.map { it.toStop() } }
     val recents: Flow<List<Stop>> = dao.recents(limit = 8).map { list -> list.map { it.toStop() } }

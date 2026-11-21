@@ -155,7 +155,7 @@ class SearchViewModel @Inject constructor(
 
     private fun searchStops(query: String) {
         stopSearchJob?.cancel()
-        if (query.length < 2) {
+        if (query.length < StopRepository.MIN_QUERY_LENGTH) {
             _state.update { it.copy(results = Load.Idle) }
             return
         }

@@ -51,6 +51,21 @@ class VvoApiTest {
     }
 
     @Test
+    fun `pointfinder validation error is a service error`() = runTest {
+        server.enqueue(
+            MockResponse().setBody(
+                """{"PointStatus":"NotIdentified","Status":{"Code":"ValidationError","Message":"invalid query"}}""",
+            ),
+        )
+        try {
+            api.findStops("Ha")
+            fail("expected an exception")
+        } catch (e: VvoException.Service) {
+            assertEquals("ValidationError", e.code)
+        }
+    }
+
+    @Test
     fun `http errors are raised`() = runTest {
         server.enqueue(MockResponse().setResponseCode(400).setBody("{}"))
         try {

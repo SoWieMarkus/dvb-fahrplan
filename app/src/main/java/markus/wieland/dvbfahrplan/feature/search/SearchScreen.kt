@@ -57,6 +57,7 @@ import markus.wieland.dvbfahrplan.core.model.Load
 import markus.wieland.dvbfahrplan.core.model.Route
 import markus.wieland.dvbfahrplan.core.model.SavedRoute
 import markus.wieland.dvbfahrplan.core.model.Stop
+import markus.wieland.dvbfahrplan.data.StopRepository
 
 @Composable
 fun SearchScreen(
@@ -205,7 +206,7 @@ private fun LazyListScope.stopSection(title: Int, stops: List<Stop>, state: Sear
 }
 
 private fun LazyListScope.suggestionsPanel(state: SearchUiState, viewModel: SearchViewModel) {
-    if (state.focusedText.trim().length < 2) {
+    if (state.focusedText.trim().length < StopRepository.MIN_QUERY_LENGTH) {
         stopSection(R.string.section_favorites, state.favorites, state, viewModel)
         stopSection(R.string.section_recent, state.recents, state, viewModel)
         return
