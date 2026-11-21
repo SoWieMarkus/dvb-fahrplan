@@ -238,15 +238,6 @@ private fun LazyListScope.departuresPanel(
         is Load.Data -> {
             val lines = departures.value.map { it.line to it.mode }.distinctBy { it.first }
                 .sortedWith(compareBy({ it.first.toIntOrNull() ?: Int.MAX_VALUE }, { it.first }))
-            // Service changes the API attached to the departures shown here.
-            val changeIds = departures.value.flatMap { it.changeIds }.distinct()
-            if (changeIds.isNotEmpty()) {
-                row("board-disruptions") {
-                    val text = if (changeIds.size == 1) stringResource(R.string.board_disruptions_one)
-                    else stringResource(R.string.board_disruptions_many, changeIds.size)
-                    DisruptionBanner(text, onClick = { onOpenDisruptions(changeIds, origin.name) }, modifier = Modifier.padding(top = 6.dp))
-                }
-            }
             if (lines.size > 1) {
                 row("filter") { LineFilter(lines, state.lineFilter, viewModel::onLineFilter) }
             }

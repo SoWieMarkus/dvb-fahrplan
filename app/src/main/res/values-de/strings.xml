@@ -38,8 +38,6 @@
 
     <string name="home_hint_title">Wo geht\'s los?</string>
     <string name="home_hint_body">Gib eine Haltestelle ein, um die Live-Abfahrten zu sehen. Mit einem Ziel bekommst du Verbindungen.</string>
-    <string name="board_disruptions_one">1 Meldung für Linien hier</string>
-    <string name="board_disruptions_many">%1$d Meldungen für Linien hier</string>
     <string name="disruptions_none">Zu dieser Meldung gibt es gerade keine Details.</string>
     <string name="home_disruptions">%1$d aktuelle Verkehrsmeldungen</string>
 

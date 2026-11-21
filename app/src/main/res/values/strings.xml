@@ -38,8 +38,6 @@
 
     <string name="home_hint_title">Where are you starting?</string>
     <string name="home_hint_body">Enter a stop to see live departures. Add a destination to plan a trip.</string>
-    <string name="board_disruptions_one">1 service change for lines here</string>
-    <string name="board_disruptions_many">%1$d service changes for lines here</string>
     <string name="disruptions_none">No details available for this service change right now.</string>
     <string name="home_disruptions">%1$d current service changes</string>
 
