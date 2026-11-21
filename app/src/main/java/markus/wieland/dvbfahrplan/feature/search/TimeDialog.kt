@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +27,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import markus.wieland.dvbfahrplan.R
-import markus.wieland.dvbfahrplan.core.designsystem.Chip
+import markus.wieland.dvbfahrplan.core.designsystem.Segmented
 import markus.wieland.dvbfahrplan.core.designsystem.FahrplanTheme
 import markus.wieland.dvbfahrplan.core.designsystem.Txt
 import markus.wieland.dvbfahrplan.core.designsystem.Zone
@@ -34,6 +35,7 @@ import markus.wieland.dvbfahrplan.core.designsystem.clock
 import markus.wieland.dvbfahrplan.core.designsystem.clockWithDay
 import markus.wieland.dvbfahrplan.data.SearchTime
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -65,35 +67,61 @@ fun TimeDialog(initial: SearchTime, onDismiss: () -> Unit, onApply: (SearchTime)
                 .background(colors.surface)
                 .padding(20.dp),
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Chip(stringResource(R.string.time_mode_depart), selected = !isArrival, onClick = { isArrival = false })
-                Chip(stringResource(R.string.time_mode_arrive), selected = isArrival, onClick = { isArrival = true })
-            }
-            Spacer(Modifier.height(18.dp))
+            val departLabel = stringResource(R.string.time_mode_depart)
+            val arriveLabel = stringResource(R.string.time_mode_arrive)
+            Segmented(
+                options = listOf(false, true),
+                selected = isArrival,
+                label = { arrival -> if (arrival) arriveLabel else departLabel },
+                onSelect = { isArrival = it },
+            )
+            Spacer(Modifier.height(22.dp))
+
             Txt(stringResource(R.string.time_pick_date).uppercase(), style = type.label, color = colors.inkMuted)
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(0L, 1L, 2L).forEach { offset ->
-                    val day = today.plusDays(offset)
-                    val label = when (offset) {
-                        0L -> stringResource(R.string.time_today)
-                        1L -> stringResource(R.string.time_tomorrow)
+            val days = listOf(today, today.plusDays(1), today.plusDays(2))
+            val todayLabel = stringResource(R.string.time_today)
+            val tomorrowLabel = stringResource(R.string.time_tomorrow)
+            Segmented(
+                options = days,
+                selected = date,
+                label = { day ->
+                    when (day) {
+                        today -> todayLabel
+                        today.plusDays(1) -> tomorrowLabel
                         else -> day.format(DateTimeFormatter.ofPattern("EE dd.MM."))
                     }
-                    Chip(label, selected = date == day, onClick = { date = day })
-                }
-            }
-            Spacer(Modifier.height(18.dp))
+                },
+                onSelect = { date = it },
+            )
+            Spacer(Modifier.height(22.dp))
+
             Txt(stringResource(R.string.time_pick_time).uppercase(), style = type.label, color = colors.inkMuted)
-            Box(
-                Modifier
-                    .clip(RoundedCornerShape(10.dp))
-                    .clickable(role = Role.Button) {
-                        TimePickerDialog(context, { _, h, m -> time = LocalTime.of(h, m) }, time.hour, time.minute, true).show()
-                    }
-                    .padding(vertical = 6.dp),
-            ) {
-                Txt(ZonedDateTime.of(date, time, Zone).toInstant().clock(), style = type.timeLarge.copy(fontSize = type.title.fontSize))
+            Spacer(Modifier.height(6.dp))
+            // Big time in the middle (tap = exact picker), quick ±5 minute steps on both sides.
+            fun shift(minutes: Long) {
+                val moved = LocalDateTime.of(date, time).plusMinutes(minutes)
+                date = moved.toLocalDate()
+                time = moved.toLocalTime()
+            }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                StepButton("−5") { shift(-5) }
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable(role = Role.Button) {
+                            TimePickerDialog(context, { _, h, m -> time = LocalTime.of(h, m) }, time.hour, time.minute, true).show()
+                        }
+                        .padding(vertical = 4.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Txt(
+                        ZonedDateTime.of(date, time, Zone).toInstant().clock(),
+                        style = type.timeLarge.copy(fontSize = type.title.fontSize * 1.5f, lineHeight = type.title.lineHeight * 1.5f),
+                    )
+                }
+                StepButton("+5") { shift(5) }
             }
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -120,5 +148,20 @@ fun TimeDialog(initial: SearchTime, onDismiss: () -> Unit, onApply: (SearchTime)
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun StepButton(text: String, onClick: () -> Unit) {
+    val colors = FahrplanTheme.colors
+    Box(
+        Modifier
+            .size(52.dp, 44.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(colors.surfaceSunken)
+            .clickable(role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Txt(text, style = FahrplanTheme.type.time, color = colors.ink)
     }
 }

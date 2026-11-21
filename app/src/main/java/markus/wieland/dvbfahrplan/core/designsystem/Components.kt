@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -324,6 +326,73 @@ fun MessageBlock(
                     .padding(horizontal = 16.dp, vertical = 9.dp),
             ) {
                 Txt(action, style = FahrplanTheme.type.bodyStrong, color = FahrplanTheme.colors.background)
+            }
+        }
+    }
+}
+
+/**
+ * Either/or switch: equal segments in a sunken track, the selected one marked by a raised "thumb"
+ * that slides over when the selection changes.
+ */
+@Composable
+fun <T> Segmented(
+    options: List<T>,
+    selected: T,
+    label: @Composable (T) -> String,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = FahrplanTheme.colors
+    val index = options.indexOf(selected)
+    val trackShape = RoundedCornerShape(12.dp)
+    val thumbShape = RoundedCornerShape(9.dp)
+    androidx.compose.foundation.layout.BoxWithConstraints(
+        modifier
+            .fillMaxWidth()
+            .clip(trackShape)
+            .background(colors.surfaceSunken)
+            .padding(3.dp),
+    ) {
+        val segment = maxWidth / options.size
+        val offset by androidx.compose.animation.core.animateDpAsState(
+            targetValue = segment * index.coerceAtLeast(0),
+            animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 500f),
+            label = "segmentThumb",
+        )
+        if (index >= 0) {
+            Box(
+                Modifier
+                    .offset(x = offset)
+                    .size(segment, 40.dp)
+                    .shadow(if (colors.isDark) 0.dp else 2.dp, thumbShape)
+                    .clip(thumbShape)
+                    .background(if (colors.isDark) colors.line else colors.surface),
+            )
+        }
+        Row(Modifier.fillMaxWidth()) {
+            options.forEach { option ->
+                val isSelected = option == selected
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                        .clip(thumbShape)
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            role = Role.RadioButton,
+                            onClick = { onSelect(option) },
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Txt(
+                        label(option),
+                        style = if (isSelected) FahrplanTheme.type.bodyStrong else FahrplanTheme.type.body,
+                        color = if (isSelected) colors.ink else colors.inkMuted,
+                        maxLines = 1,
+                    )
+                }
             }
         }
     }
