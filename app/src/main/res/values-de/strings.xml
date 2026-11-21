@@ -1,47 +1,80 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Dresden Fahrplanauskunft</string>
-    <string name="platform_short">Gl.</string>
-    <string name="minute_short">Min.</string>
-    <string name="departure_selected_station">AUSGEWÄHLTE STATION</string>
-    <string name="departure_lines">Linien</string>
-    <string name="route_transfer_time">Umstiegszeit</string>
-    <string name="route_waiting_time">Wartezeit</string>
-    <string name="hour_short_term">Std.</string>
-    <string name="stops">Zwischenhalte</string>
-    <string name="stops_singular">Zwischenhalt</string>
-    <string name="error_no_stop">Es konnte keine Haltestelle mit diesem Namen gefunden werden.</string>
-    <string name="secure_connection">sicherer Anschluss</string>
-    <string name="footpath">Fußweg</string>
-    <string name="error_duplicated_stop">Der Startpunkt ist identisch zum Ziel.</string>
-    <string name="now">jetzt</string>
-    <string name="menu_item_route_title">Route</string>
-    <string name="menu_item_route_departure">Haltestellenauskunft</string>
-    <string name="error_nothing_found">Keine Ergebnisse.</string>
-    <string name="departure_station">Haltestelle</string>
-    <string name="route_string_title">Meine Verbindung:</string>
-    <string name="route_string_from">Von:</string>
-    <string name="route_string_to">Nach:</string>
-    <string name="route_string_route">Verlauf:</string>
-    <string name="route_string_departure">Abfahrt</string>
-    <string name="route_string_arrival">Ankunft</string>
-    <string name="content_description_vehicle_typ">Fahrzeug</string>
-    <string name="content_description_next">Als nächstes</string>
-    <string name="time_picker_time">Uhrzeit</string>
-    <string name="route_destination">Zielhaltestelle</string>
-    <string name="route_origin">Starthaltestelle</string>
-    <string name="content_description_expand">Erweitere</string>
-    <string name="content_description_share">Teilen</string>
-    <string name="time_picker_change">Ändern</string>
-    <string name="route_interchanges">Umstiege</string>
-    <string name="route_interchange_singular">Umstieg</string>
-    <string name="route_departure">ab</string>
-    <string name="route_arrival">an</string>
-    <string name="time_picker_save">Speichern</string>
-    <string name="time_picker_cancel">Abbrechen</string>
-    <string name="time_picker_date">Datum</string>
-    <string name="time_picker_today">Heute</string>
-    <string name="route_informationen">Hinweise</string>
-    <string name="content_description_switch">Wechseln</string>
-    <string name="stay_in_vehicle">Nicht umsteigen!</string>
+
+    <string name="field_origin">Von</string>
+    <string name="field_destination">Nach</string>
+    <string name="field_destination_hint">Nach (optional)</string>
+    <string name="action_swap">Start und Ziel tauschen</string>
+    <string name="action_clear">Leeren</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_favorite">Als Favorit merken</string>
+    <string name="action_unfavorite">Aus Favoriten entfernen</string>
+    <string name="action_share">Teilen</string>
+    <string name="action_retry">Nochmal versuchen</string>
+    <string name="action_earlier">Frühere Verbindungen</string>
+    <string name="action_later">Spätere Verbindungen</string>
+    <string name="action_show_all">Alle anzeigen</string>
+
+    <string name="time_now">Jetzt</string>
+    <string name="time_depart_at">Ab %1$s</string>
+    <string name="time_arrive_by">An %1$s</string>
+    <string name="time_mode_depart">Abfahrt</string>
+    <string name="time_mode_arrive">Ankunft</string>
+    <string name="time_today">Heute</string>
+    <string name="time_tomorrow">Morgen</string>
+    <string name="time_pick_date">Datum</string>
+    <string name="time_pick_time">Uhrzeit</string>
+    <string name="time_apply">Übernehmen</string>
+
+    <string name="section_saved_routes">Meine Strecken</string>
+    <string name="action_save_route">Strecke merken</string>
+    <string name="action_unsave_route">Strecke vergessen</string>
+    <string name="section_favorites">Favoriten</string>
+    <string name="section_recent">Zuletzt</string>
+    <string name="section_results">Haltestellen</string>
+    <string name="section_departures">Abfahrten</string>
+    <string name="section_connections">Verbindungen</string>
+    <string name="section_disruptions">Verkehrsmeldungen</string>
+
+    <string name="home_hint_title">Wo geht\'s los?</string>
+    <string name="home_hint_body">Gib eine Haltestelle ein, um die Live-Abfahrten zu sehen. Mit einem Ziel bekommst du Verbindungen.</string>
+    <string name="board_disruptions_one">1 Meldung für Linien hier</string>
+    <string name="board_disruptions_many">%1$d Meldungen für Linien hier</string>
+    <string name="disruptions_none">Zu dieser Meldung gibt es gerade keine Details.</string>
+    <string name="home_disruptions">%1$d aktuelle Verkehrsmeldungen</string>
+
+    <string name="live">Live</string>
+    <string name="minutes_short">%1$d min</string>
+    <string name="now_short">jetzt</string>
+    <string name="platform">Steig %1$s</string>
+    <string name="track">Gleis %1$s</string>
+    <string name="cancelled">Fällt aus</string>
+    <string name="all_lines">Alle</string>
+    <string name="updated_ago">Aktualisiert %1$s</string>
+
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_hours">%1$d h %2$d min</string>
+    <string name="interchanges_none">direkt</string>
+    <string name="interchanges_one">1 Umstieg</string>
+    <string name="interchanges_many">%1$d Umstiege</string>
+    <string name="footpath_minutes">%1$d min Fußweg</string>
+    <string name="transfer_minutes">Umstieg · %1$d min</string>
+    <string name="stairs">Treppe / Aufzug</string>
+    <string name="wait_minutes">%1$d min Wartezeit</string>
+    <string name="stay_in_vehicle">Sitzen bleiben</string>
+    <string name="stops_count_one">1 Halt</string>
+    <string name="stops_count_many">%1$d Halte</string>
+    <string name="direction">Richtung %1$s</string>
+    <string name="price">%1$s € · %2$s</string>
+
+    <string name="empty_departures">In den nächsten Stunden fährt hier nichts.</string>
+    <string name="empty_connections">Keine Verbindungen gefunden.</string>
+    <string name="empty_stops">Keine Haltestelle mit diesem Namen.</string>
+    <string name="error_network">Keine Verbindung zu den VVO-Servern.</string>
+    <string name="error_generic">Beim Laden ist etwas schiefgegangen.</string>
+    <string name="error_same_stop">Start und Ziel sind dieselbe Haltestelle.</string>
+
+    <string name="share_title">Meine Verbindung</string>
+    <string name="share_from_to">%1$s → %2$s</string>
+    <string name="disclaimer">Kein Angebot von DVB oder VVO. Daten: VVO WebAPI · Karte: OpenFreeMap, © OpenStreetMap-Mitwirkende</string>
 </resources>
