@@ -1,10 +1,6 @@
 package markus.wieland.dvbfahrplan.feature.search
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -26,7 +22,14 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,21 +99,19 @@ fun SearchScreen(
             live = state.panel == Panel.DEPARTURES && departures is Load.Data,
             onTimeClick = { showTimeDialog = true },
         )
-        AnimatedContent(
-            targetState = state.panel,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
-            label = "panel",
-            modifier = Modifier.weight(1f),
-        ) { panel ->
-            LazyColumn(Modifier.fillMaxSize()) {
-                when (panel) {
-                    Panel.HOME -> homePanel(state, disruptions, viewModel) { onOpenDisruptions(null, null) }
-                    Panel.SUGGESTIONS -> suggestionsPanel(state, viewModel)
-                    Panel.DEPARTURES -> departuresPanel(state, departures, viewModel, onOpenTrip, onOpenDisruptions)
-                    Panel.ROUTES -> routesPanel(state, viewModel, onOpenRoute)
-                }
-                item { Spacer(Modifier.navigationBarsPadding().height(24.dp)) }
+        // One list for every panel. Rows keep their keys across panels (e.g. favorites on the home screen and
+        // in the suggestions), so they stay and slide into place while the other rows fade in or out.
+        // Cross-fading two whole lists instead showed both on top of each other for a moment.
+        val listState = rememberLazyListState()
+        LaunchedEffect(state.panel) { listState.scrollToItem(0) }
+        LazyColumn(state = listState, modifier = Modifier.weight(1f).fillMaxWidth()) {
+            when (state.panel) {
+                Panel.HOME -> homePanel(state, disruptions, viewModel) { onOpenDisruptions(null, null) }
+                Panel.SUGGESTIONS -> suggestionsPanel(state, viewModel)
+                Panel.DEPARTURES -> departuresPanel(state, departures, viewModel, onOpenTrip, onOpenDisruptions)
+                Panel.ROUTES -> routesPanel(state, viewModel, onOpenRoute)
             }
+            item(key = "bottom-spacer") { Spacer(Modifier.navigationBarsPadding().height(24.dp)) }
         }
     }
 
@@ -162,18 +163,18 @@ private fun LazyListScope.homePanel(
     onOpenDisruptions: () -> Unit,
 ) {
     if (disruptions.isNotEmpty()) {
-        item(key = "disruptions") {
+        row("disruptions") {
             DisruptionBanner(stringResource(R.string.home_disruptions, disruptions.size), onOpenDisruptions)
         }
     }
     if (state.savedRoutes.isNotEmpty()) {
-        item(key = "label-saved-routes") { SectionLabel(stringResource(R.string.section_saved_routes)) }
-        items(state.savedRoutes, key = { "saved-${it.key}" }) { route ->
+        row("label-saved-routes") { SectionLabel(stringResource(R.string.section_saved_routes)) }
+        rows(state.savedRoutes, key = { "saved-${it.key}" }) { route ->
             SavedRouteRow(route, onClick = { viewModel.onOpenSavedRoute(route) })
         }
     }
     if (state.savedRoutes.isEmpty() && state.favorites.isEmpty() && state.recents.isEmpty()) {
-        item(key = "hint") {
+        row("hint") {
             MessageBlock(
                 title = stringResource(R.string.home_hint_title),
                 body = stringResource(R.string.home_hint_body),
@@ -182,7 +183,7 @@ private fun LazyListScope.homePanel(
     }
     stopSection(R.string.section_favorites, state.favorites, state, viewModel)
     stopSection(R.string.section_recent, state.recents, state, viewModel)
-    item(key = "disclaimer") {
+    row("disclaimer") {
         Txt(
             stringResource(R.string.disclaimer),
             style = FahrplanTheme.type.caption,
@@ -194,8 +195,8 @@ private fun LazyListScope.homePanel(
 
 private fun LazyListScope.stopSection(title: Int, stops: List<Stop>, state: SearchUiState, viewModel: SearchViewModel) {
     if (stops.isEmpty()) return
-    item(key = "label-$title") { SectionLabel(stringResource(title)) }
-    items(stops, key = { "$title-${it.id}" }) { stop ->
+    row("label-$title") { SectionLabel(stringResource(title)) }
+    rows(stops, key = { "$title-${it.id}" }) { stop ->
         StopRow(
             stop = stop,
             isFavorite = stop.id in state.favoriteIds,
@@ -214,13 +215,13 @@ private fun LazyListScope.suggestionsPanel(state: SearchUiState, viewModel: Sear
     when (val results = state.results) {
         is Load.Data -> {
             if (results.value.isEmpty()) {
-                item { MessageBlock(stringResource(R.string.empty_stops)) }
+                row("message") { MessageBlock(stringResource(R.string.empty_stops)) }
             } else {
                 stopSection(R.string.section_results, results.value, state, viewModel)
             }
         }
-        is Load.Failed -> item { ErrorBlock(results.kind, onRetry = viewModel::onRetryStops) }
-        Load.Loading, Load.Idle -> item { SkeletonRows(4) }
+        is Load.Failed -> row("error") { ErrorBlock(results.kind, onRetry = viewModel::onRetryStops) }
+        Load.Loading, Load.Idle -> row("skeleton") { SkeletonRows(4) }
     }
 }
 
@@ -232,7 +233,7 @@ private fun LazyListScope.departuresPanel(
     onOpenDisruptions: (List<String>?, String?) -> Unit,
 ) {
     val origin = state.origin ?: return
-    item(key = "board-header") { BoardHeader(origin, origin.id in state.favoriteIds) { viewModel.onToggleFavorite(origin) } }
+    row("board-header") { BoardHeader(origin, origin.id in state.favoriteIds) { viewModel.onToggleFavorite(origin) } }
     when (departures) {
         is Load.Data -> {
             val lines = departures.value.map { it.line to it.mode }.distinctBy { it.first }
@@ -240,20 +241,20 @@ private fun LazyListScope.departuresPanel(
             // Service changes the API attached to the departures shown here.
             val changeIds = departures.value.flatMap { it.changeIds }.distinct()
             if (changeIds.isNotEmpty()) {
-                item(key = "board-disruptions") {
+                row("board-disruptions") {
                     val text = if (changeIds.size == 1) stringResource(R.string.board_disruptions_one)
                     else stringResource(R.string.board_disruptions_many, changeIds.size)
                     DisruptionBanner(text, onClick = { onOpenDisruptions(changeIds, origin.name) }, modifier = Modifier.padding(top = 6.dp))
                 }
             }
             if (lines.size > 1) {
-                item(key = "filter") { LineFilter(lines, state.lineFilter, viewModel::onLineFilter) }
+                row("filter") { LineFilter(lines, state.lineFilter, viewModel::onLineFilter) }
             }
             val visible = departures.value.filter { state.lineFilter == null || it.line == state.lineFilter }
             if (visible.isEmpty()) {
-                item { MessageBlock(stringResource(R.string.empty_departures)) }
+                row("message") { MessageBlock(stringResource(R.string.empty_departures)) }
             }
-            items(visible, key = { "${it.tripId}-${it.rawTime}" }) { departure ->
+            rows(visible, key = { "${it.tripId}-${it.rawTime}" }) { departure ->
                 val now = rememberNow()
                 DepartureRow(
                     departure = departure,
@@ -264,8 +265,8 @@ private fun LazyListScope.departuresPanel(
                 Hairline(start = 86.dp)
             }
         }
-        is Load.Failed -> item { ErrorBlock(departures.kind, onRetry = viewModel::onRetry) }
-        else -> item { SkeletonRows() }
+        is Load.Failed -> row("error") { ErrorBlock(departures.kind, onRetry = viewModel::onRetry) }
+        else -> row("skeleton") { SkeletonRows() }
     }
 }
 
@@ -277,19 +278,19 @@ private fun LazyListScope.routesPanel(
     val origin = state.origin ?: return
     val destination = state.destination ?: return
     if (state.sameStop) {
-        item { MessageBlock(stringResource(R.string.error_same_stop)) }
+        row("message") { MessageBlock(stringResource(R.string.error_same_stop)) }
         return
     }
-    item(key = "routes-header") {
+    row("routes-header") {
         RoutesHeader(origin, destination, saved = state.isRouteSaved, onToggleSaved = viewModel::onToggleSavedRoute)
     }
     when (val routes = state.routes) {
         is Load.Data -> {
             if (routes.value.routes.isEmpty()) {
-                item { MessageBlock(stringResource(R.string.empty_connections)) }
+                row("message") { MessageBlock(stringResource(R.string.empty_connections)) }
                 return
             }
-            item(key = "earlier") {
+            row("earlier") {
                 TextButton(
                     stringResource(R.string.action_earlier),
                     onClick = { viewModel.onMoreRoutes(earlier = true) },
@@ -299,19 +300,16 @@ private fun LazyListScope.routesPanel(
                 Hairline(start = 0.dp)
             }
             if (state.loadingEarlier) {
-                item(key = "earlier-skeleton") { SkeletonRouteRows(2, Modifier.animateItem()) }
+                row("earlier-skeleton") { SkeletonRouteRows(2) }
             }
-            items(routes.value.routes, key = { r -> "${r.departure?.scheduled}-${r.legs.joinToString { it.line.orEmpty() }}" }) { route ->
-                // animateItem: new earlier/later connections fade in and the list slides instead of jumping.
-                Column(Modifier.animateItem()) {
-                    RouteRow(route) { onOpenRoute(route, origin, destination) }
-                    Hairline()
-                }
+            rows(routes.value.routes, key = { r -> "${r.departure?.scheduled}-${r.legs.joinToString { it.line.orEmpty() }}" }) { route ->
+                RouteRow(route) { onOpenRoute(route, origin, destination) }
+                Hairline()
             }
             if (state.loadingLater) {
-                item(key = "later-skeleton") { SkeletonRouteRows(2, Modifier.animateItem()) }
+                row("later-skeleton") { SkeletonRouteRows(2) }
             }
-            item(key = "later") {
+            row("later") {
                 TextButton(
                     stringResource(R.string.action_later),
                     onClick = { viewModel.onMoreRoutes(earlier = false) },
@@ -320,10 +318,27 @@ private fun LazyListScope.routesPanel(
                 )
             }
         }
-        is Load.Failed -> item { ErrorBlock(routes.kind, onRetry = viewModel::onRetry) }
-        else -> item { SkeletonRows(5) }
+        is Load.Failed -> row("error") { ErrorBlock(routes.kind, onRetry = viewModel::onRetry) }
+        else -> row("skeleton") { SkeletonRows(5) }
     }
 }
+
+/**
+ * A row of the panel list that fades in/out and slides when the rows around it change.
+ * Leaving rows vanish quickly and new ones fade in a little later, so rows sliding into place never
+ * have a half-transparent row lying on top of them.
+ */
+private fun LazyListScope.row(key: Any, content: @Composable () -> Unit) =
+    item(key = key) { Column(panelRowModifier()) { content() } }
+
+private fun <T> LazyListScope.rows(list: List<T>, key: (T) -> Any, content: @Composable (T) -> Unit) =
+    items(list, key = key) { element -> Column(panelRowModifier()) { content(element) } }
+
+private fun androidx.compose.foundation.lazy.LazyItemScope.panelRowModifier() = Modifier.animateItem(
+    fadeInSpec = tween(durationMillis = 220, delayMillis = 90),
+    placementSpec = spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold),
+    fadeOutSpec = tween(durationMillis = 70),
+)
 
 // ---- Pieces ----
 
