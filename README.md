@@ -36,10 +36,10 @@ Disclaimer! The app is NOT related to the Dresdner Verkehrsbetriebe (DVB) or the
 
 ## Screenshots
 
-<img width="24%" src="screenshots/2.0/en/1-home.png"> <img width="24%" src="screenshots/2.0/en/2-departures.png"> <img width="24%" src="screenshots/2.0/en/3-connections.png"> <img width="24%" src="screenshots/2.0/en/4-route-detail.png">
-<img width="24%" src="screenshots/2.0/en/5-trip.png"> <img width="24%" src="screenshots/2.0/en/6-service-changes.png"> <img width="24%" src="screenshots/2.0/en/7-time.png">
+<img width="24%" src="screenshots/en/light/1-home.png"> <img width="24%" src="screenshots/en/light/2-departures.png"> <img width="24%" src="screenshots/en/light/3-connections.png"> <img width="24%" src="screenshots/en/light/4-route-detail.png">
+<img width="24%" src="screenshots/en/light/5-trip.png"> <img width="24%" src="screenshots/en/light/6-service-changes.png"> <img width="24%" src="screenshots/en/light/7-time.png">
 
-German versions: [screenshots/2.0/de](screenshots/2.0/de).
+Dark mode and German versions: [screenshots/2.0](screenshots/2.0) (`<en|de>/<light|dark>`).
 
 ## Releasing
 
