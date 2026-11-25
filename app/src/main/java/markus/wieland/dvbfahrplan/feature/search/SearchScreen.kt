@@ -45,6 +45,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import markus.wieland.dvbfahrplan.R
@@ -190,13 +197,40 @@ private fun LazyListScope.homePanel(
     stopSection(R.string.section_favorites, state.favorites, state, viewModel)
     stopSection(R.string.section_recent, state.recents, state, viewModel)
     row("disclaimer") {
-        Txt(
-            stringResource(R.string.disclaimer),
-            style = FahrplanTheme.type.caption,
-            color = FahrplanTheme.colors.inkFaint,
+        Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 28.dp),
-        )
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Txt(
+                stringResource(R.string.disclaimer),
+                style = FahrplanTheme.type.caption,
+                color = FahrplanTheme.colors.inkFaint,
+            )
+            SourceLinks()
+        }
     }
+}
+
+/** Links to the official sources of the timetable and map data (required by Play's misleading-claims policy). */
+@Composable
+private fun SourceLinks() {
+    val label = stringResource(R.string.disclaimer_sources)
+    val color = FahrplanTheme.colors.inkFaint
+    val linkStyles = TextLinkStyles(SpanStyle(color = color, textDecoration = TextDecoration.Underline))
+    val sources = listOf(
+        "vvo-online.de" to "https://www.vvo-online.de",
+        "dvb.de" to "https://www.dvb.de",
+        "OpenStreetMap" to "https://www.openstreetmap.org/copyright",
+    )
+    val text = buildAnnotatedString {
+        append(label)
+        append(" ")
+        sources.forEachIndexed { i, (name, url) ->
+            if (i > 0) append(" · ")
+            withLink(LinkAnnotation.Url(url, linkStyles)) { append(name) }
+        }
+    }
+    BasicText(text = text, style = FahrplanTheme.type.caption.copy(color = color))
 }
 
 private fun LazyListScope.stopSection(title: Int, stops: List<Stop>, state: SearchUiState, viewModel: SearchViewModel) {

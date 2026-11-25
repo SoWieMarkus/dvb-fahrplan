@@ -74,5 +74,6 @@
 
     <string name="share_title">My connection</string>
     <string name="share_from_to">%1$s → %2$s</string>
-    <string name="disclaimer">Not affiliated with DVB or VVO. Data: VVO WebAPI · Map: OpenFreeMap, © OpenStreetMap contributors</string>
+    <string name="disclaimer">Unofficial app. Not affiliated with DVB, VVO or any public authority. Timetable data: VVO WebAPI · Map: OpenFreeMap, © OpenStreetMap contributors</string>
+    <string name="disclaimer_sources">Official sources:</string>
 </resources>

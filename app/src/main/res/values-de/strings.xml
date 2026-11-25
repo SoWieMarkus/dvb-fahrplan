@@ -74,5 +74,6 @@
 
     <string name="share_title">Meine Verbindung</string>
     <string name="share_from_to">%1$s → %2$s</string>
-    <string name="disclaimer">Kein Angebot von DVB oder VVO. Daten: VVO WebAPI · Karte: OpenFreeMap, © OpenStreetMap-Mitwirkende</string>
+    <string name="disclaimer">Inoffizielle App. Kein Angebot von DVB, VVO oder einer Behörde. Fahrplandaten: VVO WebAPI · Karte: OpenFreeMap, © OpenStreetMap-Mitwirkende</string>
+    <string name="disclaimer_sources">Offizielle Quellen:</string>
 </resources>
