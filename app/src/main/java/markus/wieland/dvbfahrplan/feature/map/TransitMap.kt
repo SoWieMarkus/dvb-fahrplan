@@ -103,6 +103,9 @@ fun TransitMap(
         val m = map ?: return@LaunchedEffect
         m.uiSettings.isRotateGesturesEnabled = false
         m.uiSettings.isTiltGesturesEnabled = false
+        // MapLibre leaves room for its logo left of the "i"; the logo is off, so pull it into the corner.
+        val inset = (12 * context.resources.displayMetrics.density).toInt()
+        m.uiSettings.setAttributionMargins(inset, 0, 0, inset)
         m.setStyle(Style.Builder().fromUri(if (dark) STYLE_DARK else STYLE_LIGHT)) { loaded ->
             addRouteLayers(loaded, inkColor, surfaceColor)
             style = loaded
